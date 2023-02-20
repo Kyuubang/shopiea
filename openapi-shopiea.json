@@ -74,8 +74,28 @@
               }
             }
           },
-          "301": {
+          "400": {
+            "description": "Invalid username/password supplied, its happens when username or password is cant parsed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GeneralError"
+                }
+              }
+            }
+          },
+          "401": {
             "description": "Invalid username/password supplied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GeneralError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "internal server error, its happens when unexpected error",
             "content": {
               "application/json": {
                 "schema": {
@@ -98,18 +118,18 @@
           }
         ],
         "summary": "Get all users by class",
-        "description": "Get users",
+        "description": "Get users by class_id",
         "operationId": "getUsers",
         "parameters": [
           {
-            "name": "class",
+            "name": "class_id",
             "in": "query",
-            "description": "Class name",
+            "description": "Class id took from class table in database, class_id must be integer, if class_id is not provide, it will return 400 bad request",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "integer"
             },
-            "example": "class1"
+            "example": "1"
           }
         ],
         "responses": {
@@ -124,7 +144,27 @@
             }
           },
           "404": {
-            "description": "course not found",
+            "description": "course not found or users not available",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GeneralError"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "invalid class id, its happens when class_id is not integer",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GeneralError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "internal server error, its happens when unexpected error",
             "content": {
               "application/json": {
                 "schema": {
@@ -508,10 +548,10 @@
       "LoginResponse": {
         "type": "object",
         "properties": {
-          "token": {
+          "message": {
             "type": "string"
           },
-          "expire": {
+          "token": {
             "type": "string"
           }
         }
@@ -525,7 +565,18 @@
           "students": {
             "type": "array",
             "items": {
-              "type": "string"
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer"
+                },
+                "username": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                }
+              }
             }
           }
         }
@@ -536,7 +587,15 @@
           "class": {
             "type": "array",
             "items": {
-              "type": "string"
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+              }
             }
           }
         }
