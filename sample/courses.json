@@ -1,0 +1,12 @@
+{
+  "courses": [
+    {
+      "id": 1,
+      "name": "linux"
+    },
+    {
+      "id": 2,
+      "name": "docker"
+    }
+  ]
+}

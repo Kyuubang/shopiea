@@ -1,0 +1,37 @@
+{
+  "course": "CS 101",
+  "class": "SIJA 10-1",
+  "date": "2017-10-10",
+  "report": [
+    {
+      "name": "John Doe",
+      "scores": [
+        {
+          "lab": "linux-00-1",
+          "score": 100
+        },
+        {
+          "lab": "linux-001-2",
+          "score": 100
+        }
+      ],
+      "total": 100,
+      "average": 95
+    },
+    {
+      "name": "John Hans",
+      "scores": [
+        {
+          "lab": "linux-00-1",
+          "score": 100
+        },
+        {
+          "lab": "linux-001-2",
+          "score": 100
+        }
+      ],
+      "total": 100,
+      "average": 95
+    }
+  ]
+}
