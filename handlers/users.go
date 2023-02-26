@@ -35,8 +35,8 @@ func CreateUser(c *gin.Context) {
 func GetUsers(c *gin.Context) {
 	classId, err := strconv.Atoi(c.Query("class_id"))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Internal Server Error",
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "invalid class_id",
 		})
 		return
 	}
@@ -65,8 +65,84 @@ func GetUsers(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"class":   className,
-		"student": users,
+		"class":    className,
+		"students": users,
+	})
+	return
+}
+
+// DeleteUser is a function to delete user
+func DeleteUser(c *gin.Context) {
+	userId := c.Query("user_id")
+	if userId == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Bad Request",
+		})
+		return
+	}
+
+	// convert string to int
+	userIdInt, err := strconv.Atoi(userId)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Bad Request",
+		})
+		return
+	}
+
+	err = db.DeleteUsersByUsersId(userIdInt)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Internal Server Error",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Success delete user",
+	})
+	return
+}
+
+// UpdateUser is a function to update user
+func UpdateUser(c *gin.Context) {
+	// Bind the JSON payload to a User struct
+	var user db.User
+	if err := c.BindJSON(&user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Bad Request",
+		})
+		return
+	}
+
+	userId := c.Query("user_id")
+	if userId == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Bad Request",
+		})
+		return
+	}
+
+	// convert string to int
+	userIdInt, err := strconv.Atoi(userId)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Bad Request",
+		})
+		return
+	}
+
+	// update user
+	err = db.UpdateUsersByUsersId(userIdInt, user)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Internal Server Error",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Success update user",
 	})
 	return
 }

@@ -49,25 +49,75 @@ func GetUsersByClassId(classId int) (users []Student, err error) {
 	return users, nil
 }
 
+// UpdateUsersByUsersId is a function to update user based on userId
+func UpdateUsersByUsersId(userId int, user User) error {
+	if user.Name == "" || user.Username == "" || user.ClassID == 0 || user.RoleID == 0 {
+		return ErrCantBeEmpty
+	}
+
+	var oldUser User
+
+	if err := DB.Where("id = ?", userId).First(&oldUser).Error; err != nil {
+		return ErrNotFound
+	}
+
+	res := DB.Table("users").Where("id = ?", userId).Updates(user)
+	if res.Error != nil {
+		return res.Error
+	}
+
+	return nil
+}
+
+// PatchUsersByUsersId is a function to patch user based on userId
+func PatchUsersByUsersId(userId int, user User) error {
+	var oldUser User
+
+	if err := DB.Where("id = ?", userId).First(&oldUser).Error; err != nil {
+		return ErrNotFound
+	}
+
+	res := DB.Table("users").Where("id = ?", userId).Updates(user)
+	if res.Error != nil {
+		return res.Error
+	}
+
+	return nil
+}
+
+// DeleteUsersByUsersId is a function to delete user based on userId
+func DeleteUsersByUsersId(userId int) error {
+	var user User
+	if err := DB.Where("id = ?", userId).First(&user).Error; err != nil {
+		return ErrNotFound
+	}
+
+	res := DB.Delete(&user)
+	if res.Error != nil {
+		return res.Error
+	}
+
+	return nil
+}
+
 // ========================================================
 
 // CreateClass is a function to create a class
-func CreateClass(class Class) error {
+func CreateClass(class Class) (result Class, err error) {
 	if class.Name == "" {
-		return ErrCantBeEmpty
+		return result, ErrCantBeEmpty
 	}
 
 	// check if a class name record exists in the table
 	if err := DB.Where("name = ?", class.Name).First(&class).Error; err != nil {
 		res := DB.Create(&class)
 		if res.Error != nil {
-			return res.Error
+			return result, res.Error
 		}
+		return class, nil
 	} else {
-		return ErrAlreadyExist
+		return result, ErrAlreadyExist
 	}
-
-	return nil
 }
 
 // GetClasses is a function to get all classes
@@ -93,25 +143,59 @@ func GetClassNameById(classId int) (string, error) {
 	return class.Name, nil
 }
 
+// UpdateClassByClassId is a function to update class based on classId
+func UpdateClassByClassId(classId int, class Class) error {
+	if class.Name == "" {
+		return ErrCantBeEmpty
+	}
+
+	var oldClass Class
+
+	if err := DB.Where("id = ?", classId).First(&oldClass).Error; err != nil {
+		return ErrNotFound
+	}
+
+	res := DB.Table("classes").Where("id = ?", classId).Updates(class)
+	if res.Error != nil {
+		return res.Error
+	}
+
+	return nil
+}
+
+// DeleteClassByClassId is a function to delete class based on classId
+func DeleteClassByClassId(classId int) error {
+	var class Class
+	if err := DB.Where("id = ?", classId).First(&class).Error; err != nil {
+		return ErrNotFound
+	}
+
+	res := DB.Delete(&class)
+	if res.Error != nil {
+		return res.Error
+	}
+
+	return nil
+}
+
 // ========================================================
 
 // CreateCourse is a function to create a course
-func CreateCourse(course Course) error {
+func CreateCourse(course Course) (result Course, err error) {
 	if course.Name == "" {
-		return ErrCantBeEmpty
+		return result, ErrCantBeEmpty
 	}
 
 	// check if a course name record exists in the table
 	if err := DB.Where("name = ?", course.Name).First(&course).Error; err != nil {
 		res := DB.Create(&course)
 		if res.Error != nil {
-			return res.Error
+			return result, res.Error
 		}
+		return course, nil
 	} else {
-		return ErrAlreadyExist
+		return result, ErrAlreadyExist
 	}
-
-	return nil
 }
 
 // GetCourses is a function to get all courses
@@ -135,25 +219,59 @@ func GetCourseNameById(courseId int) (courseName string, err error) {
 	return course.Name, nil
 }
 
+// UpdateCourseByCourseId is a function to update course based on courseId
+func UpdateCourseByCourseId(courseId int, course Course) error {
+	if course.Name == "" {
+		return ErrCantBeEmpty
+	}
+
+	var oldCourse Course
+
+	if err := DB.Where("id = ?", courseId).First(&oldCourse).Error; err != nil {
+		return ErrNotFound
+	}
+
+	res := DB.Model(&course).Where("id = ?", courseId).Updates(course)
+	if res.Error != nil {
+		return res.Error
+	}
+
+	return nil
+}
+
+// DeleteCourseByCourseId is a function to delete course based on courseId
+func DeleteCourseByCourseId(courseId int) error {
+	var course Course
+	if err := DB.Where("id = ?", courseId).First(&course).Error; err != nil {
+		return ErrNotFound
+	}
+
+	res := DB.Delete(&course)
+	if res.Error != nil {
+		return res.Error
+	}
+
+	return nil
+}
+
 // ========================================================
 
 // CreateLab is a function to create a lab
-func CreateLab(lab Lab) error {
+func CreateLab(lab Lab) (result Lab, err error) {
 	if lab.Name == "" {
-		return ErrCantBeEmpty
+		return result, ErrCantBeEmpty
 	}
 
 	// check if a lab name record exists in the table
 	if err := DB.Where("name = ?", lab.Name).First(&lab).Error; err != nil {
 		res := DB.Create(&lab)
 		if res.Error != nil {
-			return res.Error
+			return result, res.Error
 		}
+		return lab, nil
 	} else {
-		return ErrAlreadyExist
+		return result, ErrAlreadyExist
 	}
-
-	return nil
 }
 
 // GetLabs is a function to get all labs based on courseId
@@ -167,6 +285,41 @@ func GetLabs(courseId string) (labs []GeneralData, err error) {
 	}
 
 	return labs, nil
+}
+
+// UpdateLabByLabId is a function to update lab based on labId
+func UpdateLabByLabId(labId int, lab Lab) error {
+	if lab.Name == "" {
+		return ErrCantBeEmpty
+	}
+
+	var oldLab Lab
+
+	if err := DB.Where("id = ?", labId).First(&oldLab).Error; err != nil {
+		return ErrNotFound
+	}
+
+	res := DB.Model(&lab).Where("id = ?", labId).Updates(lab)
+	if res.Error != nil {
+		return res.Error
+	}
+
+	return nil
+}
+
+// DeleteLabByLabId is a function to delete lab based on labId
+func DeleteLabByLabId(labId int) error {
+	var lab Lab
+	if err := DB.Where("id = ?", labId).First(&lab).Error; err != nil {
+		return ErrNotFound
+	}
+
+	res := DB.Delete(&lab)
+	if res.Error != nil {
+		return res.Error
+	}
+
+	return nil
 }
 
 // ========================================================

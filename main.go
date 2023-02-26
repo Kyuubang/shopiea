@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"github.com/Kyuubang/shopiea/db"
@@ -78,26 +79,72 @@ func main() {
 		apiV1.GET("/score", handlers.GetScore)
 		// handlers for check token with middleware
 		apiV1.POST("/auth/check", handlers.CheckToken)
+		// handlers for anonymous function config
+		apiV1.GET("/info", func(c *gin.Context) {
+			// json object that include date, config
+			data, err := json.Marshal(map[string]interface{}{
+				"date":    time.Now().Format(time.RFC822),
+				"version": "1.0.0",
+				"config": map[string]string{
+					"case_repo":    os.Getenv("SHOPIEA_CASE_REPO"),
+					"case_branch":  os.Getenv("SHOPIEA_CASE_BRANCH"),
+					"infra_repo":   os.Getenv("SHOPIEA_INFRA_REPO"),
+					"infra_branch": os.Getenv("SHOPIEA_INFRA_BRANCH"),
+				},
+			})
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{
+					"message": "error when marshal json",
+				})
+				return
+			}
+
+			// return data json object to client with status code 200
+			c.Data(http.StatusOK, "application/json", data)
+			return
+		})
 
 		// admin handlers
 		admin := apiV1.Group("/admin", handlers.AdminOnly())
 		{
 			// handlers for check admin
 			admin.POST("/check", handlers.CheckToken)
+
 			// handlers for get all user
 			admin.GET("/user", handlers.GetUsers)
+			// handlers for create user
+			admin.POST("/user", handlers.CreateUser)
+			// handlers for delete user
+			admin.DELETE("/user", handlers.DeleteUser)
+			// handlers for update user
+			admin.PUT("/user", handlers.UpdateUser)
+
 			// handlers for get all class
 			admin.GET("/class", handlers.GetClasses)
 			// handlers for create class
 			admin.POST("/class", handlers.CreateClass)
+			// handlers for delete class
+			admin.DELETE("/class", handlers.DeleteClass)
+			// handlers for update class
+			admin.PUT("/class", handlers.UpdateClass)
+
 			// handlers for create course
 			admin.POST("/course", handlers.CreateCourse)
+			// handlers for update course
+			admin.PUT("/course", handlers.UpdateCourse)
+			// handlers for delete course
+			admin.DELETE("/course", handlers.DeleteCourse)
+
 			// handlers for create labs
 			admin.POST("/labs", handlers.CreateLabs)
-			// handlers for create user
-			admin.POST("/user", handlers.CreateUser)
+			// handlers for update labs
+			admin.PUT("/labs", handlers.UpdateLabs)
+			// handlers for delete labs
+			admin.DELETE("/labs", handlers.DeleteLabs)
+
 			// handlers for export score
 			admin.GET("/export", handlers.ExportScore)
+
 		}
 	}
 
