@@ -4,8 +4,14 @@ import (
 	"github.com/Kyuubang/shopiea/db"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"regexp"
 	"strconv"
 )
+
+func isValidUsername(s string) bool {
+	re := regexp.MustCompile(`^[a-zA-Z0-9]{1,16}$`)
+	return re.MatchString(s)
+}
 
 func CreateUser(c *gin.Context) {
 	// Bind the JSON payload to a User struct
@@ -17,8 +23,16 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 
+	// check if username contains only alphanumeric
+	if !isValidUsername(user.Username) {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "username must contain only alphanumeric",
+		})
+		return
+	}
+
 	// create user
-	err := db.CreateUser(user)
+	res, err := db.CreateUser(user)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": err.Error(),
@@ -27,8 +41,10 @@ func CreateUser(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, gin.H{
-		"user":    user.Username,
-		"message": "successful create user",
+		"username": user.Username,
+		"name":     user.Name,
+		"id":       res.ID,
+		"message":  "successful create user",
 	})
 }
 
@@ -73,7 +89,7 @@ func GetUsers(c *gin.Context) {
 
 // DeleteUser is a function to delete user
 func DeleteUser(c *gin.Context) {
-	userId := c.Query("user_id")
+	userId := c.Query("id")
 	if userId == "" {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Bad Request",

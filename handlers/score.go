@@ -7,8 +7,6 @@ import (
 	"strconv"
 )
 
-// TODO: create function to do handle score push by user_id, labs_id
-
 // PushScore endpoint to push score
 func PushScore(c *gin.Context) {
 	// Bind the JSON payload to a User struct

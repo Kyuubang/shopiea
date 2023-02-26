@@ -15,27 +15,32 @@ var (
 )
 
 // CreateUser is a function to create a user with hashed and salted password
-func CreateUser(user User) error {
-	if user.Name == "" || user.Username == "" || user.Password == "" || user.ClassID == 0 || user.RoleID == 0 {
-		return ErrCantBeEmpty
+func CreateUser(user User) (result User, err error) {
+	if user.Name == "" || user.Username == "" || user.Password == "" || user.ClassID == 0 {
+		return result, ErrCantBeEmpty
+	}
+
+	if user.RoleID == 0 {
+		user.RoleID = 2
 	}
 
 	// check if a username record exists in the table
 	if err := DB.Where("username = ?", user.Username).First(&user).Error; err != nil {
 		hashedPassword, err := hashAndSaltPassword(user.Password)
 		if err != nil {
-			return err
+			return result, err
 		}
 		user.Password = hashedPassword
 
 		res := DB.Create(&user)
 		if res.Error != nil {
-			return res.Error
+			return result, res.Error
 		}
+
+		return user, nil
 	} else {
-		return ErrAlreadyExist
+		return result, ErrAlreadyExist
 	}
-	return nil
 }
 
 // GetUsersByClassId is a function to get all users based on classId
