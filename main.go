@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"flag"
-	"fmt"
 	"github.com/Kyuubang/shopiea/db"
 	"github.com/Kyuubang/shopiea/handlers"
 	"github.com/gin-contrib/zap"
@@ -148,16 +147,14 @@ func main() {
 		}
 	}
 
-	var addr = os.Getenv("SHOPIEA_HOST") + ":" + os.Getenv("SHOPIEA_PORT")
 	// create http server on port 8080
 	server := &http.Server{
-		Addr:         addr, //+ os.Getenv("SHOPIEA_PORT"),
+		Addr:         ":9898",
 		Handler:      router,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 10 * time.Second,
 	}
 	err = server.ListenAndServe()
-	fmt.Println("Server running on port", addr)
 
 	if err != nil {
 		panic(err)
