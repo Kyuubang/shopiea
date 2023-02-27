@@ -43,6 +43,11 @@ Run the server
 go run main.go
 ```
 
+or with make command
+```bash
+make run
+```
+
 ## License
 
 This project is licensed under the MIT License. See the LICENSE file for details.
