@@ -1,6 +1,8 @@
 # Shopiea
 
-Shopiea is a RESTful API written in Go that provides scoring system functionalities for managing and scoring student assignments, authentication and registering lab and course, and generating reports. It currently does not have a dashboard UI, but provides an OpenAPI 3.0 specification for anyone to develop a dashboard.
+Shopiea is a RESTful API written in Go that provides scoring system functionalities for managing and scoring student 
+assignments, authentication and registering lab and course, and generating reports. It currently does not have a dashboard 
+UI, but provides an OpenAPI 3.0 specification for anyone to develop a dashboard.
 
 ## Features
 
@@ -33,7 +35,7 @@ Run the database migrations
 go run main.go -migrate
 ```
 
-Source `.env` file
+modify `.env` with your environment and source `.env` file
 ```bash
 set -a; source .env; set +a
 ```
@@ -43,7 +45,7 @@ Run the server
 go run main.go
 ```
 
-or with make command
+or with `make` command
 ```bash
 make run
 ```
