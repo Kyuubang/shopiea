@@ -53,16 +53,16 @@ func ExportScore(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"class":  className,
-		"course": courseName,
-		"date":   time.Now().Format("2006-01-02"),
-		"time":   time.Now().Format("15:04:05"),
-		"report": report,
+		"class":   className,
+		"course":  courseName,
+		"date":    time.Now().Format("2006-01-02"),
+		"time":    time.Now().Format("15:04:05"),
+		"reports": report,
 	})
 	return
 }
 
-func calculateAverageScore(scores []db.ScoreLab) (avarage float64, total int) {
+func calculateAverageScore(scores []db.ScoreLabs) (avarage float64, total int) {
 	var sum int
 	if len(scores) == 0 {
 		return 0, 0
@@ -79,20 +79,58 @@ func structureReport(courseId int, classId int) (report []db.Report, err error) 
 		return nil, err
 	}
 
+	// convert int to string
+	courseIdStr := strconv.Itoa(courseId)
+
 	for _, student := range students {
+
+		labs, err := db.GetLabs(courseIdStr)
+		if err != nil {
+			return nil, err
+		}
+
 		scoreLabs, err := db.ExportScores(student.ID, courseId, classId)
 		if err != nil {
 			return nil, err
 		}
-		averageScore, totalScore := calculateAverageScore(scoreLabs)
+		var scoreLabsStruct []db.ScoreLabs
+		for _, lab := range labs {
+			if len(scoreLabs) == 0 {
+				scoreLabsStruct = append(scoreLabsStruct, db.ScoreLabs{
+					LabName: lab.Name,
+					Score:   0,
+					ID:      lab.ID,
+				})
+				continue
+			}
+			var isExist bool
+			for _, scoreLab := range scoreLabs {
+				if scoreLab.LabName == lab.Name {
+					scoreLabsStruct = append(scoreLabsStruct, db.ScoreLabs{
+						LabName: lab.Name,
+						Score:   scoreLab.Score,
+						ID:      lab.ID,
+					})
+					isExist = true
+				}
+			}
+			if !isExist {
+				scoreLabsStruct = append(scoreLabsStruct, db.ScoreLabs{
+					LabName: lab.Name,
+					Score:   0,
+					ID:      lab.ID,
+				})
+			}
+		}
+
+		averageScore, totalScore := calculateAverageScore(scoreLabsStruct)
 		report = append(report, db.Report{
 			Name:     student.Name,
 			Username: student.Username,
 			Average:  averageScore,
-			Scores:   scoreLabs,
+			Scores:   scoreLabsStruct,
 			Total:    totalScore,
 		})
 	}
 	return report, nil
-
 }
