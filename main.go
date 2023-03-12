@@ -65,6 +65,31 @@ func main() {
 	// handlers for login user
 	router.POST("/auth/login", handlers.Login)
 
+	// handlers for anonymous function config
+	router.GET("/info", func(c *gin.Context) {
+		// json object that include date, config
+		data, err := json.Marshal(map[string]interface{}{
+			"date":    time.Now().Format(time.RFC822),
+			"version": "1.0.0",
+			"config": map[string]string{
+				"case_repo":    os.Getenv("SHOPIEA_CASE_REPO"),
+				"case_branch":  os.Getenv("SHOPIEA_CASE_BRANCH"),
+				"infra_repo":   os.Getenv("SHOPIEA_INFRA_REPO"),
+				"infra_branch": os.Getenv("SHOPIEA_INFRA_BRANCH"),
+			},
+		})
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"message": "error when marshal json",
+			})
+			return
+		}
+
+		// return data json object to client with status code 200
+		c.Data(http.StatusOK, "application/json", data)
+		return
+	})
+
 	// handlers versioning - version 1
 	apiV1 := router.Group("/v1", handlers.AuthMiddleware())
 	{
@@ -78,30 +103,6 @@ func main() {
 		apiV1.GET("/score", handlers.GetScore)
 		// handlers for check token with middleware
 		apiV1.POST("/auth/check", handlers.CheckToken)
-		// handlers for anonymous function config
-		apiV1.GET("/info", func(c *gin.Context) {
-			// json object that include date, config
-			data, err := json.Marshal(map[string]interface{}{
-				"date":    time.Now().Format(time.RFC822),
-				"version": "1.0.0",
-				"config": map[string]string{
-					"case_repo":    os.Getenv("SHOPIEA_CASE_REPO"),
-					"case_branch":  os.Getenv("SHOPIEA_CASE_BRANCH"),
-					"infra_repo":   os.Getenv("SHOPIEA_INFRA_REPO"),
-					"infra_branch": os.Getenv("SHOPIEA_INFRA_BRANCH"),
-				},
-			})
-			if err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{
-					"message": "error when marshal json",
-				})
-				return
-			}
-
-			// return data json object to client with status code 200
-			c.Data(http.StatusOK, "application/json", data)
-			return
-		})
 
 		// admin handlers
 		admin := apiV1.Group("/admin", handlers.AdminOnly())
