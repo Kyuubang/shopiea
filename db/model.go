@@ -63,17 +63,23 @@ type GeneralData struct {
 
 // Report struct
 type Report struct {
-	Name     string     `json:"name"`
-	Username string     `json:"username"`
-	Scores   []ScoreLab `json:"scores"`
-	Average  float64    `json:"average"`
-	Total    int        `json:"total"`
+	Name     string      `json:"name"`
+	Username string      `json:"username"`
+	Scores   []ScoreLabs `json:"scores,omitempty"`
+	Average  float64     `json:"average"`
+	Total    int         `json:"total"`
 }
 
 // ScoreLab single report score based on lab name
 type ScoreLab struct {
 	LabName string `json:"lab" gorm:"column:name"`
 	Score   int    `json:"score"`
+}
+
+type ScoreLabs struct {
+	LabName string `json:"lab_name"`
+	Score   int    `json:"score"`
+	ID      int    `json:"id"`
 }
 
 // Login Model
