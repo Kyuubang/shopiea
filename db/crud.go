@@ -377,7 +377,8 @@ func PushScore(userId int, score ScorePush) error {
 	} else {
 		// update score record if score is higher
 		if scores.Score < score.Score {
-			res := DB.Model(&scores).Update("score", score.Score)
+			scores.Score = score.Score
+			res := DB.Save(&scores)
 			if res.Error != nil {
 				return res.Error
 			}
