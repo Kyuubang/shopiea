@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: shopiea-db
+    environment:
+      POSTGRES_USER: shopiea
+      POSTGRES_PASSWORD: mysecretpassword
+      POSTGRES_DB: shopiea
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - ./db/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U shopiea"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - shopiea-network
+
+  shopiea:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: shopiea-app
+    environment:
+      SHOPIEA_MODE: development
+      SHOPIEA_ENV: development
+      SHOPIEA_HOST: 0.0.0.0
+      SHOPIEA_PORT: 9898
+      SHOPIEA_DB_HOST: postgres
+      SHOPIEA_DB_PORT: 5432
+      SHOPIEA_DB_USER: shopiea
+      SHOPIEA_DB_PASSWORD: mysecretpassword
+      SHOPIEA_DB_NAME: shopiea
+      SHOPIEA_CASE_REPO: github.com/Kyuubang/philo-sample-case
+      SHOPIEA_CASE_BRANCH: master
+      SHOPIEA_INFRA_REPO: github.com/Kyuubang/philo-sample-infra
+      SHOPIEA_INFRA_BRANCH: master
+    ports:
+      - "9898:9898"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - shopiea-network
+
+volumes:
+  postgres_data:
+
+networks:
+  shopiea-network:
+    driver: bridge

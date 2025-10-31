@@ -36,7 +36,7 @@ func (config Config) InitDB(migrate bool) error {
 
 	if migrate {
 		// Auto-migrate the database schema
-		err = DB.AutoMigrate(&User{}, &Course{}, &Lab{}, &Score{})
+		err = DB.AutoMigrate(&Role{}, &Class{}, &User{}, &Course{}, &Lab{}, &Score{})
 		if err != nil {
 			return err
 		}
