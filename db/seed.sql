@@ -13,7 +13,9 @@ INSERT INTO classes (id, name) VALUES
 ON CONFLICT (name) DO NOTHING;
 
 -- Insert default admin user
+-- WARNING: This is a default password for initial setup only!
 -- Password: admin123 (hashed with bcrypt)
+-- IMPORTANT: Change this password immediately after first login in production environments!
 INSERT INTO users (id, username, password, name, role_id, class_id) VALUES 
     (1, 'admin', '$2a$10$65liQ6mYNskzwSG9pj4qA.gXhpDwIeXXv5o0gb/dpr.uuCZymWXSm', 'Administrator', 1, 1)
 ON CONFLICT (username) DO NOTHING;

@@ -34,10 +34,15 @@ The Atlas configuration is defined in `atlas.hcl` with two environments:
 ```hcl
 env "local" {
   src = "file://db/schema.sql"
-  url = "postgres://shopiea:mysecretpassword@172.17.0.2:5432/shopiea?sslmode=disable"
+  url = getenv("SHOPIEA_DB_URL")  // Reads from environment variable
   dev = "docker://postgres/15/dev"
   schemas = ["public"]
 }
+```
+
+**Important**: Set the `SHOPIEA_DB_URL` environment variable before using Atlas:
+```bash
+export SHOPIEA_DB_URL="postgres://shopiea:mysecretpassword@localhost:5432/shopiea?sslmode=disable"
 ```
 
 ### Production Environment
@@ -45,7 +50,7 @@ env "local" {
 ```hcl
 env "prod" {
   src = "file://db/schema.sql"
-  url = getenv("DATABASE_URL")
+  url = getenv("DATABASE_URL")  // Reads from environment variable
   dev = "docker://postgres/15/dev"
   schemas = ["public"]
 }
@@ -76,34 +81,38 @@ This file contains initial seed data:
 
 ### 1. Inspect Current Database Schema
 
-View the current state of your database:
+View the current state of your database using the environment configuration:
+
+```bash
+# Ensure SHOPIEA_DB_URL is set in your environment
+source .env
+atlas schema inspect --env local
+```
+
+Or with explicit URL (not recommended for production):
 
 ```bash
 atlas schema inspect \
   --url "postgres://shopiea:mysecretpassword@localhost:5432/shopiea?sslmode=disable"
 ```
 
-With environment:
-
-```bash
-atlas schema inspect --env local
-```
-
 ### 2. Apply Schema Changes
 
-Apply the schema from `db/schema.sql` to your database:
+Apply the schema from `db/schema.sql` to your database using the environment configuration:
+
+```bash
+# Ensure SHOPIEA_DB_URL is set in your environment
+source .env
+atlas schema apply --env local
+```
+
+Or with explicit URL (not recommended for production):
 
 ```bash
 atlas schema apply \
   --url "postgres://shopiea:mysecretpassword@localhost:5432/shopiea?sslmode=disable" \
   --to "file://db/schema.sql" \
   --dev-url "docker://postgres/15/dev"
-```
-
-With environment:
-
-```bash
-atlas schema apply --env local
 ```
 
 ### 3. Compare Schemas (Diff)

@@ -4,7 +4,8 @@ env "local" {
   src = "file://db/schema.sql"
   
   // Database URL for local development
-  url = "postgres://shopiea:mysecretpassword@172.17.0.2:5432/shopiea?sslmode=disable"
+  // Override with: atlas --env local --var url="postgres://user:pass@host:5432/db"
+  url = getenv("SHOPIEA_DB_URL")
   
   // Migrations directory
   dev = "docker://postgres/15/dev"

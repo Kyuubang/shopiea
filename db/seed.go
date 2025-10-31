@@ -114,7 +114,7 @@ func seedAdminUsers() error {
 				log.Printf("Error creating user %s: %v", user.Username, err)
 				return err
 			}
-			log.Printf("Created admin user: %s (password: admin123)", user.Username)
+			log.Printf("Created admin user: %s (default password set - change immediately!)", user.Username)
 		} else {
 			log.Printf("User already exists: %s", user.Username)
 		}
