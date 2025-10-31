@@ -15,7 +15,7 @@ ON CONFLICT (name) DO NOTHING;
 -- Insert default admin user
 -- Password: admin123 (hashed with bcrypt)
 INSERT INTO users (id, username, password, name, role_id, class_id) VALUES 
-    (1, 'admin', '$2a$10$8K1p/a0dL3LcrmomqMs.YeVUOxo4lXfqO.ztQs3Y8jU7Jc9uMQh4e', 'Administrator', 1, 1)
+    (1, 'admin', '$2a$10$65liQ6mYNskzwSG9pj4qA.gXhpDwIeXXv5o0gb/dpr.uuCZymWXSm', 'Administrator', 1, 1)
 ON CONFLICT (username) DO NOTHING;
 
 -- Insert default course
