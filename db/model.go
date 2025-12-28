@@ -1,5 +1,7 @@
 package db
 
+import "time"
+
 // User represents a user of the system
 type User struct {
 	ID       int    `gorm:"primaryKey" json:"id"`
@@ -40,12 +42,14 @@ type Lab struct {
 
 // Score represents a student score of a lab
 type Score struct {
-	ID     int  `gorm:"primaryKey" json:"id"`
-	UserID int  `gorm:"not null" json:"user_id"`
-	User   User `gorm:"foreignKey:UserID"`
-	LabID  int  `gorm:"not null" json:"lab_id"`
-	Lab    Lab  `gorm:"foreignKey:LabID"`
-	Score  int  `gorm:"not null" json:"score"`
+	ID        int       `gorm:"primaryKey" json:"id"`
+	UserID    int       `gorm:"not null" json:"user_id"`
+	User      User      `gorm:"foreignKey:UserID"`
+	LabID     int       `gorm:"not null" json:"lab_id"`
+	Lab       Lab       `gorm:"foreignKey:LabID"`
+	Score     int       `gorm:"not null" json:"score"`
+	CreatedAt time.Time `gorm:"not null" json:"created_at"`
+	UpdatedAt time.Time `gorm:"not null" json:"updated_at"`
 }
 
 // Student response struct
