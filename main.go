@@ -15,11 +15,14 @@ import (
 
 var (
 	migrate bool
+	seed    bool
 )
 
 func init() {
 	// set flag migrate to run database migration
 	flag.BoolVar(&migrate, "migrate", false, "run database migration")
+	// set flag seed to run database seeding
+	flag.BoolVar(&seed, "seed", false, "run database seeding")
 	// set gin mode
 	if os.Getenv("SHOPIEA_MODE") == "release" {
 		gin.SetMode(gin.ReleaseMode)
@@ -29,6 +32,9 @@ func init() {
 }
 
 func main() {
+	// parse flags
+	flag.Parse()
+
 	// init db
 	var conn = db.Config{
 		Host:     os.Getenv("SHOPIEA_DB_HOST"),
@@ -42,6 +48,15 @@ func main() {
 	err := conn.InitDB(migrate)
 	if err != nil {
 		panic(err)
+	}
+
+	// run database seeding if seed flag is set
+	if seed {
+		err = db.Seed()
+		if err != nil {
+			panic(err)
+		}
+		os.Exit(0)
 	}
 
 	// init router

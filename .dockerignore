@@ -1,0 +1,38 @@
+# Git
+.git
+.gitignore
+
+# Documentation
+README.md
+LICENSE
+
+# Environment files
+.env
+
+# Build artifacts
+bin/
+shopiea
+
+# Dependencies (will be downloaded in the container)
+vendor/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.log
+*.tmp
+tmp/
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Sample files
+sample/
